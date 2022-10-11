@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable-xxxhdpi/ic_baseline_search_24.xml" value="0.198" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/background_back_button.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/background_genre_chip.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/background_play_trailer.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/background_rate_movie.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/background_release_year.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/gradient_banner.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/gradient_best_actor.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/ic_baseline_play_arrow_24.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2145" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/activity_movie_detail.xml" value="0.33" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/activity_search_movies.xml" value="0.30825138948268493" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/view_holder_best_actor.xml" value="0.75" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/view_holder_showcases.xml" value="0.33" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/view_item_banner.xml" value="0.33" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/view_item_movie_list.xml" value="0.33" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/view_pod_best_actor.xml" value="0.30825138948268493" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/layout/view_pod_movie_list.xml" value="0.30825138948268493" />
+        <entry key="..\:/02 Trial Development/Android/HelloMovieApp/app/src/main/res/menu/menu_discover.xml" value="0.19010416666666666" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
