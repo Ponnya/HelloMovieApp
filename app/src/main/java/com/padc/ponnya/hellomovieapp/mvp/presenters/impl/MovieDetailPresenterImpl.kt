@@ -4,13 +4,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.padc.ponnya.hellomovieapp.activities.MovieDetailActivity
 import com.padc.ponnya.hellomovieapp.data.models.MovieModelImpl
+import com.padc.ponnya.hellomovieapp.interactors.MovieInteractor
+import com.padc.ponnya.hellomovieapp.interactors.MovieInteractorImpl
 import com.padc.ponnya.hellomovieapp.mvp.presenters.MovieDetailPresenter
 import com.padc.ponnya.hellomovieapp.mvp.views.MovieDetailView
 
 class MovieDetailPresenterImpl: ViewModel(), MovieDetailPresenter {
 
     //Model
-    private val mMovieModel = MovieModelImpl
+    private var mMovieInteractor: MovieInteractor = MovieInteractorImpl
 
     //View
     private var mView: MovieDetailView? = null
@@ -20,29 +22,25 @@ class MovieDetailPresenterImpl: ViewModel(), MovieDetailPresenter {
     }
 
     override fun onUiReadyInMovieDetail(owner: LifecycleOwner, movieId: Int) {
-        mMovieModel.getMovieDetail(
-            movieId = movieId.toString(),
-            onFailure = {
-                mView?.showError(it)
-            }
-        )?.observe(owner){
-            if (it != null) {
-               mView?.showMovieDetail(it)
+        //Movie Details
+        mMovieInteractor.getMovieDetail(movieId.toString()){
+            mView?.showError(it)
+        }?.observe(owner){
+            it?.let {
+                mView?.showMovieDetail(it)
             }
         }
-        mMovieModel.getCreditByMovie(
-            movieId = movieId.toString(),
-            onSuccess = {
-               mView?.showCreditsByMovie(cast = it.first, crew = it.second)
-            },
-            onFailure = {
-                mView?.showError(it)
-            }
-        )
+
+        //Credits
+        mMovieInteractor.getCreditByMovie(movieId.toString(), onSuccess = {
+            mView?.showCreditsByMovie(it.first,it.second)
+        }, onFailure = {
+            mView?.showError(it)
+        })
     }
 
     override fun onTapBack() {
-      mView?.navigateBack()
+        mView?.navigateBack()
     }
 
     override fun onUiReady(owner: LifecycleOwner) {

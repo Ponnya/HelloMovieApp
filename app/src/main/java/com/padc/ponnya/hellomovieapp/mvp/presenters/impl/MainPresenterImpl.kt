@@ -5,52 +5,53 @@ import androidx.lifecycle.ViewModel
 import com.padc.ponnya.hellomovieapp.data.models.MovieModel
 import com.padc.ponnya.hellomovieapp.data.models.MovieModelImpl
 import com.padc.ponnya.hellomovieapp.data.vos.GenreVO
+import com.padc.ponnya.hellomovieapp.interactors.MovieInteractor
+import com.padc.ponnya.hellomovieapp.interactors.MovieInteractorImpl
 import com.padc.ponnya.hellomovieapp.mvp.presenters.MainPresenter
 import com.padc.ponnya.hellomovieapp.mvp.views.MainView
 
 class MainPresenterImpl: ViewModel(), MainPresenter {
 
     //View
-    var mView: MainView? = null
+    var mView : MainView? = null
 
-    //Model
-    private val mMovieModel: MovieModel = MovieModelImpl
+    //Interactors
+    private val mMovieInteractor: MovieInteractor = MovieInteractorImpl
 
     //States
     private var mGenres: List<GenreVO>? = listOf()
 
     override fun initView(view: MainView) {
-       mView = view
+        mView = view
     }
 
     override fun onUiReady(owner: LifecycleOwner) {
         //Now Playing Movies
-        mMovieModel.getNowPlayingMovies {
+        mMovieInteractor.getNowPlayingMovies {
             mView?.showError(it)
         }?.observe(owner) {
             mView?.showNowPlayingMovies(it)
         }
 
-
         //Popular Movies
-        mMovieModel.getPopularMovies {
+        mMovieInteractor.getPopularMovies {
             mView?.showError(it)
-        }?.observe(owner) {
+        }?.observe(owner){
             mView?.showPopularMovies(it)
         }
 
         //Top Rated Movies
-        mMovieModel.getTopRatedMovies {
+        mMovieInteractor.getTopRatedMovies {
             mView?.showError(it)
-        }?.observe(owner) {
+        }?.observe(owner){
             mView?.showTopRatedMovies(it)
         }
 
         //Genre List
-        mMovieModel.getGenreList(
+        mMovieInteractor.getGenreList(
             onSuccess = {
                 mGenres = it
-               mView?.showGenres(it)
+                mView?.showGenres(it)
 
                 //Get Movies By Genre For First Genre
                 it.firstOrNull()?.id?.let { genreId ->
@@ -62,7 +63,7 @@ class MainPresenterImpl: ViewModel(), MainPresenter {
             }
         )
 
-        mMovieModel.popularActors(
+        mMovieInteractor.popularActors(
             onSuccess = {
                 mView?.showActors(it)
             },
@@ -70,18 +71,6 @@ class MainPresenterImpl: ViewModel(), MainPresenter {
                 mView?.showError(it)
             }
         )
-    }
-
-    override fun onTapGenre(genrePosition: Int) {
-        mGenres?.getOrNull(genrePosition)?.id?.let { genreId->
-            mMovieModel.getMoviesByGenreId(genreId = genreId.toString(),
-            onSuccess = {
-                mView?.showMoviesByGenre(it)
-            },
-            onFailure = {
-                mView?.showError(it)
-            })
-        }
     }
 
     override fun onTapMovieFromBanner(movieId: Int) {
@@ -95,4 +84,16 @@ class MainPresenterImpl: ViewModel(), MainPresenter {
     override fun onTapMovieFromShowcase(movieId: Int) {
         mView?.navigateToMovieDetailsScreen(movieId)
     }
+
+    override fun onTapGenre(genrePosition: Int) {
+        mGenres?.getOrNull(genrePosition)?.id?.let { genreId ->
+            mMovieInteractor.getMoviesByGenreId(genreId = genreId.toString(), onSuccess = {
+                mView?.showMoviesByGenre(it)
+            }, onFailure = {
+                mView?.showError(it)
+            })
+        }
+    }
+
+
 }

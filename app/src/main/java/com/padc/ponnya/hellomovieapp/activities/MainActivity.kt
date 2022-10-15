@@ -15,6 +15,8 @@ import com.padc.ponnya.hellomovieapp.data.vos.MovieVO
 import com.padc.ponnya.hellomovieapp.mvp.presenters.MainPresenter
 import com.padc.ponnya.hellomovieapp.mvp.presenters.impl.MainPresenterImpl
 import com.padc.ponnya.hellomovieapp.mvp.views.MainView
+import com.padc.ponnya.hellomovieapp.routers.navigateToMovieDetailsActivity
+import com.padc.ponnya.hellomovieapp.routers.navigateToMovieSearchActivity
 import com.padc.ponnya.hellomovieapp.viewpods.BestActorViewPod
 import com.padc.ponnya.hellomovieapp.viewpods.MovieListViewPod
 import kotlinx.android.synthetic.main.activity_main.*
@@ -128,10 +130,13 @@ class MainActivity : BaseActivity(), MainView {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        startActivity(SearchMoviesActivity.newIntent(this))
-
-
-        return super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.menuItemSearch -> {
+                navigateToMovieSearchActivity()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun showNowPlayingMovies(nowPlayingMovies: List<MovieVO>) {
@@ -159,7 +164,7 @@ class MainActivity : BaseActivity(), MainView {
     }
 
     override fun navigateToMovieDetailsScreen(movieId: Int) {
-        startActivity(MovieDetailActivity.newIntent(this, movieId))
+        navigateToMovieDetailsActivity(movieId)
     }
 
 
