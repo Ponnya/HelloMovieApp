@@ -4,18 +4,18 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.padc.ponnya.hellomovieapp.R
 import com.padc.ponnya.hellomovieapp.adapters.BannerAdapter
 import com.padc.ponnya.hellomovieapp.adapters.ShowcasesAdapter
-import com.padc.ponnya.hellomovieapp.data.models.MovieModel
-import com.padc.ponnya.hellomovieapp.data.models.MovieModelImpl
 import com.padc.ponnya.hellomovieapp.data.vos.GenreVO
 import com.padc.ponnya.hellomovieapp.delegates.BannerViewHolderDelegate
 import com.padc.ponnya.hellomovieapp.delegates.MovieViewHolderDelegate
 import com.padc.ponnya.hellomovieapp.delegates.ShowcasesViewHolderDelegate
+import com.padc.ponnya.hellomovieapp.mvvm.MainViewModel
 import com.padc.ponnya.hellomovieapp.viewpods.BestActorViewPod
 import com.padc.ponnya.hellomovieapp.viewpods.MovieListViewPod
 import kotlinx.android.synthetic.main.activity_main.*
@@ -31,15 +31,14 @@ class MainActivity : AppCompatActivity(), BannerViewHolderDelegate, MovieViewHol
     lateinit var mBestActorViewPod: BestActorViewPod
 
 
-    //Model
-    private val mMovieModel: MovieModel = MovieModelImpl
-
-    //Data
-    private var mGenres: List<GenreVO>? = null
+    //ViewModel
+    private lateinit var mViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        setUpViewModel()
 
         setUpToolBar()
         setUpBannerViewPager()
@@ -51,72 +50,28 @@ class MainActivity : AppCompatActivity(), BannerViewHolderDelegate, MovieViewHol
         //MovieDataAgentImpl.getNowPlayingMovies()
         //OkHttpDataAgentImpl.getNowPlayingMovies()
 
-        requestData()
+        //Observe Live Data
+        observeLiveData()
 
     }
 
-    private fun requestData() {
-
-        //Now Playing Movies
-        mMovieModel.getNowPlayingMovies {
-            showError(it)
-        }?.observe(this) {
-            mBannerAdapter.setNewData(it)
-        }
-
-
-        //Popular Movies
-        mMovieModel.getPopularMovies {
-            showError(it)
-        }?.observe(this) {
-            mBestPopularMovieListAndSeriesViewPod.setData(it)
-        }
-
-        //Top Rated Movies
-        mMovieModel.getTopRatedMovies {
-            showError(it)
-        }?.observe(this) {
-            mShowcasesAdapter.setNewData(it)
-        }
-
-        //Genre List
-        mMovieModel.getGenreList(
-            onSuccess = {
-                mGenres = it
-                setUpGenreTabLayout(it)
-
-                //Get Movies By Genre For First Genre
-                it.firstOrNull()?.id?.let { genreId ->
-                    getMoviesByGenreId(genreId)
-                }
-            },
-            onFailure = {
-                showError(it)
-            }
-        )
-
-        mMovieModel.popularActors(
-            onSuccess = {
-                mBestActorViewPod.setData(it)
-            },
-            onFailure = {
-                showError(it)
-            }
-        )
+    private fun setUpViewModel() {
+        mViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        mViewModel.getInitialData()
     }
 
-    private fun getMoviesByGenreId(genreId: Int) {
-        mMovieModel.getMoviesByGenreId(
-            genreId = genreId.toString(),
-            onSuccess = {
-                mMoviesByGenreViewPod.setData(it)
-            },
-            onFailure = {
-                showError(it)
-            }
+    private fun observeLiveData() {
+        mViewModel.nowPlayingMovieLiveData?.observe(this, mBannerAdapter::setNewData)
+        mViewModel.popularMoviesLiveData?.observe(
+            this,
+            mBestPopularMovieListAndSeriesViewPod::setData
         )
-
+        mViewModel.topRatedMovieLiveData?.observe(this, mShowcasesAdapter::setNewData)
+        mViewModel.genresLiveData.observe(this, this::setUpGenreTabLayout)
+        mViewModel.moviesByGenreLiveData.observe(this, mMoviesByGenreViewPod::setData)
+        mViewModel.actorsLiveData.observe(this, mBestActorViewPod::setData)
     }
+
 
     private fun setUpViewPods() {
         mBestPopularMovieListAndSeriesViewPod = vpBestPopularFilmsAmdSeries as MovieListViewPod
@@ -139,9 +94,8 @@ class MainActivity : AppCompatActivity(), BannerViewHolderDelegate, MovieViewHol
     private fun setUpListeners() {
         tabLayoutGenre.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                mGenres?.getOrNull(tab?.position ?: 0)?.id?.let {
-                    getMoviesByGenreId(it)
-                }
+                mViewModel.getMovieByGenre(tab?.position ?: 0)
+
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -194,15 +148,12 @@ class MainActivity : AppCompatActivity(), BannerViewHolderDelegate, MovieViewHol
     }
 
 
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-      startActivity(SearchMoviesActivity.newIntent(this))
+        startActivity(SearchMoviesActivity.newIntent(this))
 
 
-        return  super.onOptionsItemSelected(item)
+        return super.onOptionsItemSelected(item)
     }
-
-
 
 
     override fun onTapMovieFromBanner(movieId: Int) {
