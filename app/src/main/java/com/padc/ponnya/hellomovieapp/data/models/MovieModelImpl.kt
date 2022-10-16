@@ -226,6 +226,8 @@ object MovieModelImpl : MovieModel, BaseModel() {
     }
 
     override fun getCreditByMovieObservable(movieId: Int): Observable<Pair<List<ActorVO>, List<ActorVO>>> {
-        TODO("Not yet implemented")
+        return mMovieApi.getCreditByMovie(movieId = movieId.toString())
+            .map{Pair(it.cast ?: listOf(),it.crew ?: listOf())}
+            .subscribeOn(Schedulers.io())
     }
 }
